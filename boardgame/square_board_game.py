@@ -28,7 +28,7 @@ class SquareBoardGame(object):
     PLAYER_ONE = 1  # the starting player
     PLAYER_TWO = 2
 
-    @abstractproperty
+    @abstractmethod
     def initial_game_state(self):
         raise NotImplementedError('')
 
@@ -65,6 +65,7 @@ class SquareBoardGame(object):
         """
         raise NotImplementedError('')
 
+    @property
     def n_moves(self):
         return len(self.moves)
 
@@ -82,6 +83,19 @@ class SquareBoardGame(object):
         numpy.ndarray(dtype=bool)
         """
         raise NotImplementedError('')
+
+    def _validate_move_type(self, move):
+        if not isinstance(move, int):
+            raise InvalidMove(
+                'move must be an integer, got {}'.format(type(move))
+            )
+        if not 0 <= move < self.n_moves:
+            raise InvalidMove(
+                'move must be an integer between 0 and {}, got {}'.format(
+                    self.n_moves - 1,
+                    move
+                )
+            )
 
     def play_move(self, game_state, player, move):
         """ Verifies the move and returns the new game state, checks its status
@@ -104,18 +118,19 @@ class SquareBoardGame(object):
         status : int
         next_player_valid_moves : numpy.ndarray(dtype=bool)
         """
+        self._validate_move_type(move)
         if not self.valid_moves(game_state, player)[move]:
             raise InvalidMove('This move is not valid.')
 
         new_game_state = self._make_move(game_state, player, move)
-        status = self.evaluate(game_state)
+        status = self.evaluate(new_game_state)
         if status == self.GAME_CONTINUOUS:
             next_player_valid_moves = self.valid_moves(
                 game_state,
                 player=self._next_player(player)
             )
         else:
-            next_player_valid_moves = numpy.zeros(self.n_moves()).astype(bool)
+            next_player_valid_moves = numpy.zeros(self.n_moves).astype(bool)
 
         return new_game_state, status, next_player_valid_moves
 
@@ -165,12 +180,13 @@ class NoughtsAndCrosses(SquareBoardGame):
     _board_size = (3, 3)
 
     def __init__(self):
-        self._moves_place_coordinates = product(
-            self._board_size[0],
-            self.board_size[1]
+        self._moves_place_coordinates = list(
+            product(
+                range(self._board_size[0]),
+                range(self._board_size[1])
+            )
         )
 
-    @property
     def initial_game_state(self):
         return numpy.zeros(self.board_size)
 
@@ -204,6 +220,8 @@ class NoughtsAndCrosses(SquareBoardGame):
     def _make_move(self, game_state, player, move):
         new_game_state = numpy.array(game_state)
         new_game_state[self._moves_place_coordinates[move]] = player
+
+        return new_game_state
 
     @property
     def moves(self):

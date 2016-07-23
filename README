@@ -1,2 +1,8 @@
 Toy project for defining board game engines with the ambition to apply some deep reinforcement learning later on.
 
+TODO:
+/ base class for game definition
+/ example with simple game
+- tests for this with bot selecting random move
+- visualisation mixin in bokeh
+-
