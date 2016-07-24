@@ -1,2 +1,11 @@
 Toy project for defining board game engines with the ambition to apply some deep reinforcement learning later on.
 
+TODO:
+[/] base class for game definition
+[/] example with simple game (Noughts...)
+[/] CMDLine engine for playing/testing/debugging
+[-] tests for example game with bot selecting random move (How to do this
+    generally? ->assume it will always end to start with!)
+[-] visualisation in bokeh (BokehEngine?)
+[/] RLEngine
+[/] Apply NNet in a basic RL setup
